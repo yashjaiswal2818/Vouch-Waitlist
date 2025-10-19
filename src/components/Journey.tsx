@@ -47,74 +47,159 @@ const journeyUpdates = [
 
 const Journey = () => {
   return (
-    <section id="journey" className="py-24 px-6 bg-zinc-950/50">
-      <div className="container mx-auto max-w-4xl">
-        <motion.h2 
+    <section id="journey" className="py-24 px-6 bg-zinc-950/50 relative overflow-hidden">
+      {/* Background gradient orbs */}
+      <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+      
+      <div className="container mx-auto max-w-6xl relative z-10">
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold text-zinc-50 text-center mb-16"
+          className="text-center mb-20"
         >
-          Follow The Journey
-        </motion.h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-zinc-50 mb-4">
+            Follow The Journey
+          </h2>
+          <p className="text-zinc-400 text-lg">Building in public, one milestone at a time</p>
+        </motion.div>
 
         <div className="relative">
+          {/* Animated center line */}
           <motion.div 
-            initial={{ height: 0 }}
-            whileInView={{ height: '100%' }}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-            className="absolute left-8 top-0 w-px bg-gradient-to-b from-blue-500/0 via-blue-500/50 to-blue-500/0"
+            transition={{ duration: 1.5, ease: 'easeOut' }}
+            className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500/20 via-blue-500/60 to-blue-500/20 origin-top"
           />
 
-          <div className="space-y-8">
+          <div className="space-y-12 md:space-y-24">
             {journeyUpdates.map((update, index) => {
               const Icon = update.icon;
-              const isEven = index % 2 === 0;
+              const isLeft = index % 2 === 0;
+              
               return (
                 <motion.div 
                   key={index} 
-                  initial={{ opacity: 0, x: isEven ? -30 : 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative pl-20"
+                  initial={{ opacity: 0, x: isLeft ? -60 : 60, y: 30 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.6, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                  className={`relative grid md:grid-cols-2 gap-8 items-center ${
+                    isLeft ? '' : 'md:direction-rtl'
+                  }`}
                 >
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="absolute left-0 w-16 h-16 rounded-full bg-card border border-zinc-800 flex items-center justify-center"
-                  >
-                    <Icon className="w-6 h-6 text-blue-500" />
-                  </motion.div>
+                  {/* Content */}
+                  <div className={`${isLeft ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12 md:col-start-2'}`}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
+                      <Card className="relative bg-gradient-to-br from-card to-zinc-900/50 border-zinc-800 p-8 rounded-2xl overflow-hidden group cursor-pointer">
+                        {/* Gradient overlay on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-transparent transition-all duration-500" />
+                        
+                        {/* Animated border */}
+                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/50 via-transparent to-blue-500/50 blur-sm" />
+                        </div>
 
-                  <Card className="bg-card border-zinc-800 p-6 card-sophisticated card-hover-glow transition-all duration-300 cursor-pointer">
-                    <div className="flex items-start justify-between mb-2">
-                      <p className="text-xs font-semibold text-zinc-500 tracking-wider">
-                        {update.date}
-                      </p>
-                      <span className="text-xs text-zinc-600">{update.platform}</span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-zinc-50 mb-2">
-                      {update.title}
-                    </h3>
-                    <p className="text-zinc-400 mb-4">
-                      {update.description}
-                    </p>
-                    {update.link !== '#' && (
-                      <a
-                        href={update.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-400 text-sm font-medium inline-flex items-center gap-1 transition-colors"
-                      >
-                        Read more →
-                      </a>
-                    )}
-                  </Card>
+                        <div className="relative">
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 tracking-wider">
+                              {update.date}
+                            </span>
+                            <span className="text-xs text-zinc-500 font-medium">{update.platform}</span>
+                          </div>
+                          
+                          <h3 className="text-2xl font-bold text-zinc-50 mb-3 group-hover:text-blue-400 transition-colors">
+                            {update.title}
+                          </h3>
+                          
+                          <p className="text-zinc-400 leading-relaxed mb-4">
+                            {update.description}
+                          </p>
+                          
+                          {update.link !== '#' && (
+                            <a
+                              href={update.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium transition-colors group/link"
+                            >
+                              Read more 
+                              <motion.span
+                                initial={{ x: 0 }}
+                                whileHover={{ x: 4 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                              >
+                                →
+                              </motion.span>
+                            </a>
+                          )}
+                        </div>
+                      </Card>
+                    </motion.div>
+                  </div>
+
+                  {/* Icon node - centered */}
+                  <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      whileInView={{ scale: 1, rotate: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ 
+                        duration: 0.6, 
+                        delay: index * 0.15 + 0.2,
+                        type: 'spring',
+                        stiffness: 200
+                      }}
+                      whileHover={{ scale: 1.15, rotate: 360 }}
+                      className="relative"
+                    >
+                      {/* Glow effect */}
+                      <div className="absolute inset-0 bg-blue-500/30 rounded-full blur-xl animate-pulse" />
+                      
+                      {/* Icon container */}
+                      <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-4 border-background shadow-2xl">
+                        <Icon className="w-9 h-9 text-white" strokeWidth={2.5} />
+                      </div>
+                      
+                      {/* Progress ring */}
+                      <svg className="absolute -inset-2 w-24 h-24 -rotate-90">
+                        <circle
+                          cx="48"
+                          cy="48"
+                          r="46"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeDasharray="289"
+                          strokeDashoffset={289 - (289 * (index + 1)) / journeyUpdates.length}
+                          className="text-blue-500/30"
+                        />
+                      </svg>
+                    </motion.div>
+                  </div>
+
+                  {/* Mobile icon */}
+                  <div className="md:hidden flex justify-center mb-4">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      className="relative"
+                    >
+                      <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg" />
+                      <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl">
+                        <Icon className="w-7 h-7 text-white" strokeWidth={2.5} />
+                      </div>
+                    </motion.div>
+                  </div>
                 </motion.div>
               );
             })}
