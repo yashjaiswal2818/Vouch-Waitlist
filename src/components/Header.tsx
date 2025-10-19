@@ -1,4 +1,16 @@
+import { useState, useEffect } from 'react';
+
 const Header = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -7,7 +19,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-zinc-800">
+    <header className={`fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 transition-all duration-300 ${scrolled ? 'glass-effect-scrolled' : 'glass-effect'}`}>
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <div className="font-semibold text-zinc-50 text-xl">EchoWidget</div>
         

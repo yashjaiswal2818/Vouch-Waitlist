@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
@@ -20,14 +21,33 @@ const FinalCTA = () => {
   return (
     <section className="py-24 px-6 bg-zinc-950/50">
       <div className="container mx-auto max-w-2xl text-center space-y-8">
-        <h3 className="text-3xl font-bold text-zinc-50">
+        <motion.h3 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-3xl font-bold text-zinc-50"
+        >
           Become an Early Adopter.
-        </h3>
-        <p className="text-lg text-zinc-400">
+        </motion.h3>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-lg text-zinc-400"
+        >
           Get early access, influence our roadmap, and be the first to elevate your social proof with EchoWidget.
-        </p>
+        </motion.p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <motion.form 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          onSubmit={handleSubmit} 
+          className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+        >
           <Input
             type="email"
             placeholder="your-email@company.com"
@@ -38,11 +58,11 @@ const FinalCTA = () => {
           />
           <Button 
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium glow-animation"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium button-glow-hover"
           >
             Request Early Access
           </Button>
-        </form>
+        </motion.form>
       </div>
     </section>
   );

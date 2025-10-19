@@ -1,9 +1,17 @@
+import { motion } from 'framer-motion';
+
 const Mission = () => {
   return (
     <section className="py-24 px-6">
       <div className="container mx-auto max-w-6xl">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
             <p className="text-sm font-semibold text-zinc-400 tracking-wider">OUR PHILOSOPHY</p>
             <h2 className="text-4xl font-bold text-zinc-50">
               It's More Than a Snippet.
@@ -11,9 +19,15 @@ const Mission = () => {
             <p className="text-lg text-zinc-400 leading-relaxed">
               Customer testimonials aren't just quotes; they're stories. They're the most authentic marketing you have. Our mission is to provide a tool so beautiful and intuitive that it does justice to your customers' words, helping you build genuine trust, not just social proof.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="relative h-96 flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative h-96 flex items-center justify-center"
+          >
             <div className="absolute inset-0">
               <svg className="w-full h-full" viewBox="0 0 400 400">
                 <defs>
@@ -23,43 +37,92 @@ const Mission = () => {
                   </linearGradient>
                 </defs>
                 
-                <circle cx="100" cy="100" r="4" fill="url(#dotGradient)">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="200" cy="80" r="4" fill="url(#dotGradient)">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" begin="0.5s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="300" cy="120" r="4" fill="url(#dotGradient)">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" begin="1s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="150" cy="200" r="4" fill="url(#dotGradient)">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" begin="1.5s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="250" cy="220" r="4" fill="url(#dotGradient)">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" begin="2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="180" cy="300" r="4" fill="url(#dotGradient)">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" begin="2.5s" repeatCount="indefinite" />
-                </circle>
+                <motion.circle 
+                  cx="100" cy="100" r="4" fill="url(#dotGradient)"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: [0.3, 1, 0.3] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+                <motion.circle 
+                  cx="200" cy="80" r="4" fill="url(#dotGradient)"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: [0.3, 1, 0.3] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 3, delay: 0.5, repeat: Infinity }}
+                />
+                <motion.circle 
+                  cx="300" cy="120" r="4" fill="url(#dotGradient)"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: [0.3, 1, 0.3] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 3, delay: 1, repeat: Infinity }}
+                />
+                <motion.circle 
+                  cx="150" cy="200" r="4" fill="url(#dotGradient)"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: [0.3, 1, 0.3] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 3, delay: 1.5, repeat: Infinity }}
+                />
+                <motion.circle 
+                  cx="250" cy="220" r="4" fill="url(#dotGradient)"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: [0.3, 1, 0.3] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 3, delay: 2, repeat: Infinity }}
+                />
+                <motion.circle 
+                  cx="180" cy="300" r="4" fill="url(#dotGradient)"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: [0.3, 1, 0.3] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 3, delay: 2.5, repeat: Infinity }}
+                />
 
-                <line x1="100" y1="100" x2="200" y2="80" stroke="hsl(217, 91%, 60%)" strokeWidth="1" strokeOpacity="0.3">
-                  <animate attributeName="stroke-opacity" values="0.1;0.5;0.1" dur="3s" repeatCount="indefinite" />
-                </line>
-                <line x1="200" y1="80" x2="300" y2="120" stroke="hsl(217, 91%, 60%)" strokeWidth="1" strokeOpacity="0.3">
-                  <animate attributeName="stroke-opacity" values="0.1;0.5;0.1" dur="3s" begin="0.5s" repeatCount="indefinite" />
-                </line>
-                <line x1="100" y1="100" x2="150" y2="200" stroke="hsl(217, 91%, 60%)" strokeWidth="1" strokeOpacity="0.3">
-                  <animate attributeName="stroke-opacity" values="0.1;0.5;0.1" dur="3s" begin="1s" repeatCount="indefinite" />
-                </line>
-                <line x1="150" y1="200" x2="250" y2="220" stroke="hsl(217, 91%, 60%)" strokeWidth="1" strokeOpacity="0.3">
-                  <animate attributeName="stroke-opacity" values="0.1;0.5;0.1" dur="3s" begin="1.5s" repeatCount="indefinite" />
-                </line>
-                <line x1="250" y1="220" x2="180" y2="300" stroke="hsl(217, 91%, 60%)" strokeWidth="1" strokeOpacity="0.3">
-                  <animate attributeName="stroke-opacity" values="0.1;0.5;0.1" dur="3s" begin="2s" repeatCount="indefinite" />
-                </line>
+                <motion.line 
+                  x1="100" y1="100" x2="200" y2="80" 
+                  stroke="hsl(217, 91%, 60%)" strokeWidth="1"
+                  initial={{ strokeDasharray: 120, strokeDashoffset: 120, opacity: 0 }}
+                  whileInView={{ strokeDashoffset: 0, opacity: 0.5 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                />
+                <motion.line 
+                  x1="200" y1="80" x2="300" y2="120" 
+                  stroke="hsl(217, 91%, 60%)" strokeWidth="1"
+                  initial={{ strokeDasharray: 120, strokeDashoffset: 120, opacity: 0 }}
+                  whileInView={{ strokeDashoffset: 0, opacity: 0.5 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.6 }}
+                />
+                <motion.line 
+                  x1="100" y1="100" x2="150" y2="200" 
+                  stroke="hsl(217, 91%, 60%)" strokeWidth="1"
+                  initial={{ strokeDasharray: 120, strokeDashoffset: 120, opacity: 0 }}
+                  whileInView={{ strokeDashoffset: 0, opacity: 0.5 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.9 }}
+                />
+                <motion.line 
+                  x1="150" y1="200" x2="250" y2="220" 
+                  stroke="hsl(217, 91%, 60%)" strokeWidth="1"
+                  initial={{ strokeDasharray: 120, strokeDashoffset: 120, opacity: 0 }}
+                  whileInView={{ strokeDashoffset: 0, opacity: 0.5 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 1.2 }}
+                />
+                <motion.line 
+                  x1="250" y1="220" x2="180" y2="300" 
+                  stroke="hsl(217, 91%, 60%)" strokeWidth="1"
+                  initial={{ strokeDasharray: 120, strokeDashoffset: 120, opacity: 0 }}
+                  whileInView={{ strokeDashoffset: 0, opacity: 0.5 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 1.5 }}
+                />
               </svg>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Twitter, MessageSquare, Figma, Code, Sparkles, Rocket } from 'lucide-react';
 
@@ -48,23 +49,49 @@ const Journey = () => {
   return (
     <section id="journey" className="py-24 px-6 bg-zinc-950/50">
       <div className="container mx-auto max-w-4xl">
-        <h2 className="text-4xl font-bold text-zinc-50 text-center mb-16">
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl font-bold text-zinc-50 text-center mb-16"
+        >
           Follow The Journey
-        </h2>
+        </motion.h2>
 
         <div className="relative">
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500/0 via-blue-500/50 to-blue-500/0"></div>
+          <motion.div 
+            initial={{ height: 0 }}
+            whileInView={{ height: '100%' }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 1.5, ease: 'easeInOut' }}
+            className="absolute left-8 top-0 w-px bg-gradient-to-b from-blue-500/0 via-blue-500/50 to-blue-500/0"
+          />
 
           <div className="space-y-8">
             {journeyUpdates.map((update, index) => {
               const Icon = update.icon;
+              const isEven = index % 2 === 0;
               return (
-                <div key={index} className="relative pl-20">
-                  <div className="absolute left-0 w-16 h-16 rounded-full bg-card border border-zinc-800 flex items-center justify-center">
+                <motion.div 
+                  key={index} 
+                  initial={{ opacity: 0, x: isEven ? -30 : 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative pl-20"
+                >
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    className="absolute left-0 w-16 h-16 rounded-full bg-card border border-zinc-800 flex items-center justify-center"
+                  >
                     <Icon className="w-6 h-6 text-blue-500" />
-                  </div>
+                  </motion.div>
 
-                  <Card className="bg-card border-zinc-800 p-6 hover:border-zinc-700 transition-colors">
+                  <Card className="bg-card border-zinc-800 p-6 card-sophisticated card-hover-glow transition-all duration-300 cursor-pointer">
                     <div className="flex items-start justify-between mb-2">
                       <p className="text-xs font-semibold text-zinc-500 tracking-wider">
                         {update.date}
@@ -88,7 +115,7 @@ const Journey = () => {
                       </a>
                     )}
                   </Card>
-                </div>
+                </motion.div>
               );
             })}
           </div>
