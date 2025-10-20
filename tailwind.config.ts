@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { heroui } from "@heroui/react";
+// Removed heroui theme plugin to avoid Tailwind v4 peer dependency
 
 export default {
   darkMode: ["class"],
@@ -7,8 +7,7 @@ export default {
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}"
+    "./src/**/*.{ts,tsx}"
   ],
   prefix: "",
   theme: {
@@ -97,5 +96,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), heroui()],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
