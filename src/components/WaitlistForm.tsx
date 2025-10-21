@@ -184,10 +184,11 @@ export default function WaitlistForm(): JSX.Element {
                             style={{
                                 width: "100%",
                                 border: `1px solid ${error ? brand.error : "#e5e7eb"}`,
-                                borderRadius: 10,
-                                padding: "10px 12px 10px 36px",
-                                fontSize: 14,
+                                borderRadius: 12,
+                                padding: "16px 16px 16px 44px",
+                                fontSize: 16,
                                 outline: "none",
+                                height: "56px",
                             }}
                             aria-invalid={Boolean(error) || undefined}
                             aria-describedby={error ? "email-error" : undefined}
@@ -215,9 +216,10 @@ export default function WaitlistForm(): JSX.Element {
                         color: "#ffffff",
                         border: "none",
                         borderRadius: 10,
-                        padding: "10px 12px",
+                        padding: "16px 20px",
                         fontWeight: 700,
-                        fontSize: 14,
+                        fontSize: 16,
+                        height: "56px",
                         cursor: submitting ? "not-allowed" : "pointer",
                         opacity: submitting ? 0.8 : 1,
                         transition: "transform 0.1s ease, opacity 0.2s ease",

@@ -8,6 +8,7 @@ export { default as Footer } from './Footer';
 
 // Utility components
 export { default as PerformanceOptimizer } from './PerformanceOptimizer';
+export { default as WaitlistCounter } from './WaitlistCounter';
 
 // Re-export UI components for easier imports
 export * from './ui/button';

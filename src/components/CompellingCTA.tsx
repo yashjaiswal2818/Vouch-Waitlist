@@ -192,14 +192,14 @@ const CompellingCTA = () => {
                                 isRequired
                                 className="flex-1"
                                 classNames={{
-                                    input: "h-10 sm:h-12 text-sm sm:text-base",
-                                    inputWrapper: "border-gray-300 focus-within:border-blue-500"
+                                    input: "h-14 sm:h-16 text-base sm:text-lg py-3",
+                                    inputWrapper: "border-gray-300 focus-within:border-blue-500 h-14 sm:h-16"
                                 }}
                             />
                             <Button
                                 type="submit"
                                 color="primary"
-                                className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base"
+                                className="h-14 sm:h-16 px-8 sm:px-10 text-base sm:text-lg"
                                 endContent={<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />}
                             >
                                 <span className="hidden sm:inline">Claim My Early Access</span>

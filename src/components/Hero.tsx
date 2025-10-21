@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/react';
-import { ArrowRight, Heart, Sparkles, CheckCircle, Star, Users, Shield, Zap } from 'lucide-react';
+import { ArrowRight, Heart, Sparkles, CheckCircle, Star, Users, Shield, Zap, Mail } from 'lucide-react';
 import { EmailService } from '@/lib/emailService';
 
 const Hero = () => {
@@ -9,29 +9,42 @@ const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setIsLoading(true);
-      try {
-        const result = await EmailService.addToWaitlist(email, 'hero');
-        setSuccessMessage(result.message);
-        setIsModalOpen(true);
-        setEmail('');
-      } catch (error) {
-        console.error('Signup failed:', error);
-        setSuccessMessage('Something went wrong. Please try again.');
-        setIsModalOpen(true);
-      } finally {
-        setIsLoading(false);
-      }
+    setError('');
+
+    if (!email) {
+      setError('Please enter your email');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await EmailService.addToWaitlist(email, 'hero');
+      setSuccessMessage(result.message);
+      setIsModalOpen(true);
+      setEmail('');
+      setError('');
+    } catch (error) {
+      console.error('Signup failed:', error);
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const trustIndicators = [
     { icon: Shield, text: "Your data is secure and never shared" },
-    { icon: Users, text: "47 founders already on the waitlist" },
+    { icon: Users, text: "Build your network of authentic testimonials in minutes" },
     { icon: Zap, text: "Get weekly build-in-public updates" }
   ];
 
@@ -88,47 +101,136 @@ const Hero = () => {
             </p>
           </motion.div>
 
-          {/* CTA Form */}
+          {/* Enhanced CTA Form */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="max-w-md mx-auto space-y-4 sm:space-y-6 px-4 sm:px-0"
+            className="max-w-2xl mx-auto space-y-6 px-4 sm:px-0"
           >
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Input
-                type="email"
-                placeholder="your-email@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                isRequired
-                className="flex-1"
-                classNames={{
-                  input: "h-12 sm:h-14 text-base sm:text-lg",
-                  inputWrapper: "border-2 border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 rounded-xl"
-                }}
-              />
-              <Button
-                type="submit"
-                color="primary"
-                size="lg"
-                className="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl"
-                endContent={isLoading ? null : <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />}
-                isLoading={isLoading}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Joining...' : (
-                  <>
-                    <span className="hidden sm:inline">Claim My Early Access</span>
-                    <span className="sm:hidden">Get Early Access</span>
-                  </>
-                )}
-              </Button>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Enhanced Email Input Container */}
+              <div className="relative">
+                <motion.div
+                  animate={{
+                    scale: isFocused ? 1.02 : 1,
+                    boxShadow: isFocused
+                      ? '0 20px 40px rgba(37, 99, 235, 0.15)'
+                      : '0 10px 25px rgba(0, 0, 0, 0.1)'
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className={`
+                    relative rounded-2xl overflow-hidden
+                    ${isFocused ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
+                  `}
+                >
+                  {/* Background gradient on focus */}
+                  <div className={`
+                    absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 
+                    transition-opacity duration-300
+                    ${isFocused ? 'opacity-100' : 'opacity-0'}
+                  `} />
+
+                  <div className="relative flex flex-col sm:flex-row gap-3 p-2 bg-white border-2 border-gray-200 rounded-2xl">
+                    {/* Email Input */}
+                    <div className="flex-1 relative">
+                      <Mail className={`
+                        absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200
+                        ${isFocused ? 'text-blue-600' : 'text-gray-400'}
+                      `} />
+                      <input
+                        type="email"
+                        placeholder="Enter your work email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          setError('');
+                        }}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        className="
+                          w-full h-14 sm:h-16 pl-12 pr-4
+                          text-base sm:text-lg
+                          bg-transparent
+                          border-none outline-none
+                          placeholder:text-gray-400
+                          text-gray-900
+                        "
+                        disabled={isLoading}
+                      />
+                    </div>
+
+                    {/* Submit Button */}
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="
+                        h-14 sm:h-16 px-6 sm:px-8
+                        text-base sm:text-lg font-bold
+                        bg-gradient-to-r from-blue-600 to-blue-700
+                        hover:from-blue-700 hover:to-blue-800
+                        text-white rounded-xl
+                        shadow-lg hover:shadow-xl
+                        transition-all duration-200
+                        disabled:opacity-50
+                      "
+                      endContent={isLoading ? null : <ArrowRight className="w-5 h-5" />}
+                      isLoading={isLoading}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <span>Joining...</span>
+                      ) : (
+                        <>
+                          <span className="hidden sm:inline">Get Early Access</span>
+                          <span className="sm:hidden">Join Now</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </motion.div>
+
+                {/* Error Message */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="text-red-600 text-sm mt-2 text-left pl-4"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Benefits Below Input */}
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-600">
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                  Free forever
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                  No setup required
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                  GDPR compliant
+                </span>
+              </div>
             </form>
 
-            <p className="text-xs sm:text-sm text-gray-500 text-center">
-              No credit card required. Launch pricing locked forever.
-            </p>
+            {/* Social Proof Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.2 }}
+              className="flex items-center justify-center gap-2 text-sm text-gray-500"
+            >
+              <span>No credit card required • Launch pricing locked forever</span>
+            </motion.div>
           </motion.div>
 
           {/* Trust Indicators */}
@@ -167,7 +269,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Thank You Modal */}
+      {/* Enhanced Thank You Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -181,41 +283,69 @@ const Hero = () => {
         <ModalContent className="max-w-sm sm:max-w-md mx-auto">
           <ModalHeader className="flex flex-col items-center text-center pt-6 sm:pt-8">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-3 sm:mb-4"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: 0.1
+              }}
+              className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg"
             >
-              <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
             </motion.div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Welcome to the Beta!</h2>
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-2xl sm:text-3xl font-bold text-gray-900"
+            >
+              You're In! 🎉
+            </motion.h2>
           </ModalHeader>
 
           <ModalBody className="text-center pb-4 sm:pb-6 px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-3 sm:space-y-4"
+              transition={{ delay: 0.4 }}
+              className="space-y-4"
             >
-              <p className="text-gray-600 text-base sm:text-lg">
-                {successMessage}
-              </p>
-              <p className="text-gray-500 text-sm sm:text-base">
-                We'll send you weekly updates on our progress and early access when we launch.
-              </p>
-              <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Let's Build Together!</span>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <p className="text-blue-900 font-semibold text-lg">
+                  {successMessage}
+                </p>
+              </div>
+
+              <div className="space-y-3 text-left">
+                <p className="text-gray-600 font-medium flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Weekly build-in-public updates in your inbox</span>
+                </p>
+                <p className="text-gray-600 font-medium flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Early access when we launch</span>
+                </p>
+                <p className="text-gray-600 font-medium flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span>Exclusive founder pricing locked in</span>
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mt-4">
+                <div className="flex items-center justify-center gap-2 text-sm text-blue-700 font-medium">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Let's build something amazing together!</span>
+                </div>
               </div>
             </motion.div>
           </ModalBody>
 
           <ModalFooter className="justify-center pb-6 sm:pb-8 px-4 sm:px-6">
             <Button
-              color="primary"
               size="lg"
-              className="px-6 sm:px-8 text-sm sm:text-base"
+              className="px-8 text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold shadow-lg"
               onPress={() => setIsModalOpen(false)}
             >
               Continue Exploring

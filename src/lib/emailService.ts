@@ -1,4 +1,6 @@
 // Email service for waitlist signups
+import { supabase } from './supabaseTest';
+
 export interface WaitlistSignup {
     email: string;
     source?: string; // Track where signup came from (hero, cta, etc.)
@@ -8,16 +10,29 @@ export interface WaitlistSignup {
 export class EmailService {
     private static async submitToBackend(data: WaitlistSignup): Promise<boolean> {
         try {
-            // TODO: Replace with your actual backend endpoint
-            const response = await fetch('/api/waitlist', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+            // Try direct Supabase connection first (for local development)
+            const { data: insertData, error: insertError } = await supabase
+                .from('waitlist')
+                .insert({
+                    email: data.email.toLowerCase(),
+                    name: null,
+                    source: data.source,
+                    created_at: new Date().toISOString()
+                })
+                .select()
+                .single();
 
-            return response.ok;
+            if (insertError) {
+                if (insertError.code === '23505') {
+                    console.log('Email already registered');
+                    return true; // Treat as success
+                }
+                console.error('Supabase insert error:', insertError);
+                return false;
+            }
+
+            console.log('Waitlist signup successful:', insertData);
+            return true;
         } catch (error) {
             console.error('Email submission failed:', error);
             return false;
