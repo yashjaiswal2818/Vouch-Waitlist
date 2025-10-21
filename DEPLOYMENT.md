@@ -6,10 +6,21 @@
 
 In your Vercel dashboard, go to **Settings** → **Environment Variables** and add:
 
+**For Frontend (React app):**
+```
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
+```
+
+**For API Routes (Serverless functions):**
 ```
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_ANON_KEY=your-supabase-anon-key-here
 ```
+
+**Note:** You need to set BOTH sets of variables because:
+- Frontend uses `VITE_` prefixed variables
+- API routes use non-prefixed variables
 
 ### Steps to Deploy
 
@@ -60,7 +71,18 @@ CREATE POLICY "Allow public waitlist reads" ON waitlist
 
 ### Troubleshooting
 
-If you get 500 errors:
+**If you get 500 errors:**
 1. Check that environment variables are set correctly in Vercel
 2. Verify your Supabase project is accessible
 3. Check the Vercel function logs for detailed error messages
+
+**If you get 401 errors:**
+1. Make sure you've set BOTH `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel
+2. Verify the Supabase URL and anon key are correct
+3. Check that your Supabase project allows public access (RLS policies are set correctly)
+4. Make sure you're using the anon key, not the service role key for frontend
+
+**Common issues:**
+- Missing `VITE_` prefix in environment variable names
+- Using service role key instead of anon key for frontend
+- Supabase RLS policies blocking public access
