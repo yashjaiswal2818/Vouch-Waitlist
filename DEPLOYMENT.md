@@ -1,5 +1,24 @@
 # Deployment Guide
 
+## Netlify Deployment
+
+### Environment Variables Required
+
+In your Netlify dashboard, go to **Site settings** → **Environment variables** and add:
+
+```
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
+```
+
+### Steps to Deploy
+
+1. **Connect your GitHub repository to Netlify**
+2. **Add the environment variables above**
+3. **Deploy**
+
+The application will work with direct Supabase connection (no API routes needed for Netlify).
+
 ## Vercel Deployment
 
 ### Environment Variables Required
@@ -86,3 +105,8 @@ CREATE POLICY "Allow public waitlist reads" ON waitlist
 - Missing `VITE_` prefix in environment variable names
 - Using service role key instead of anon key for frontend
 - Supabase RLS policies blocking public access
+
+**For Netlify specifically:**
+- Make sure environment variables are set in **Site settings** → **Environment variables**
+- Redeploy after adding environment variables
+- Check that the build command is `npm run build` and publish directory is `dist`
