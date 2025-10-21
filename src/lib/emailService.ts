@@ -1,6 +1,4 @@
 // Email service for waitlist signups
-import { supabase } from './supabaseTest';
-
 export interface WaitlistSignup {
     email: string;
     source?: string; // Track where signup came from (hero, cta, etc.)
@@ -8,34 +6,36 @@ export interface WaitlistSignup {
 }
 
 export class EmailService {
-    private static async submitToBackend(data: WaitlistSignup): Promise<boolean> {
+    private static async submitToBackend(data: WaitlistSignup): Promise<{ success: boolean; position?: number }> {
         try {
-            // Try direct Supabase connection first (for local development)
-            const { data: insertData, error: insertError } = await supabase
-                .from('waitlist')
-                .insert({
-                    email: data.email.toLowerCase(),
+            // Use the API route instead of direct Supabase connection
+            const response = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: data.email,
                     name: null,
-                    source: data.source,
-                    created_at: new Date().toISOString()
+                    source: data.source
                 })
-                .select()
-                .single();
+            });
 
-            if (insertError) {
-                if (insertError.code === '23505') {
-                    console.log('Email already registered');
-                    return true; // Treat as success
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 409) {
+                    // Email already exists
+                    return { success: true, position: 0 };
                 }
-                console.error('Supabase insert error:', insertError);
-                return false;
+                throw new Error(errorData.error || 'Failed to submit');
             }
 
-            console.log('Waitlist signup successful:', insertData);
-            return true;
+            const result = await response.json();
+            console.log('Waitlist signup successful:', result);
+            return { success: true, position: result.position };
         } catch (error) {
             console.error('Email submission failed:', error);
-            return false;
+            return { success: false };
         }
     }
 
@@ -57,15 +57,15 @@ export class EmailService {
         };
 
         // Try backend first, fallback to localStorage
-        const backendSuccess = await this.submitToBackend(signupData);
+        const backendResult = await this.submitToBackend(signupData);
 
-        if (!backendSuccess) {
+        if (!backendResult.success) {
             this.storeLocally(signupData);
         }
 
         return {
             success: true,
-            message: backendSuccess
+            message: backendResult.success
                 ? "Welcome to the waitlist! Check your email for confirmation."
                 : "Welcome to the waitlist! We'll notify you when we launch."
         };

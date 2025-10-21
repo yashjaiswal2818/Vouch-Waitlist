@@ -1,16 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, TrendingUp, Clock } from 'lucide-react';
-import { EmailService } from '@/lib/emailService';
 
 const WaitlistCounter = () => {
     const [signupCount, setSignupCount] = useState(47);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Get current signup count
-        const count = EmailService.getSignupCount();
-        setSignupCount(count);
+        // Fetch count from API
+        const fetchCount = async () => {
+            try {
+                const response = await fetch('/api/waitlist-count');
+                if (response.ok) {
+                    const data = await response.json();
+                    setSignupCount(data.count || 47);
+                }
+            } catch (error) {
+                console.error('Failed to fetch waitlist count:', error);
+            }
+        };
+
+        fetchCount();
 
         // Show counter when component is visible
         const observer = new IntersectionObserver(
@@ -30,11 +40,19 @@ const WaitlistCounter = () => {
         return () => observer.disconnect();
     }, []);
 
-    // Simulate real-time updates (in production, this would come from your backend)
+    // Update count periodically
     useEffect(() => {
         if (isVisible) {
-            const interval = setInterval(() => {
-                setSignupCount(prev => prev + Math.floor(Math.random() * 3));
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/waitlist-count');
+                    if (response.ok) {
+                        const data = await response.json();
+                        setSignupCount(data.count || 47);
+                    }
+                } catch (error) {
+                    console.error('Failed to update count:', error);
+                }
             }, 30000); // Update every 30 seconds
 
             return () => clearInterval(interval);
