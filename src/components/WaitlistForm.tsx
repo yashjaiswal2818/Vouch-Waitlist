@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Mail, Loader2, AlertCircle } from "lucide-react";
+import { createClient } from '@supabase/supabase-js';
 
 type ApiSuccess = {
     success: true;
@@ -57,24 +58,48 @@ export default function WaitlistForm(): JSX.Element {
         }
         setSubmitting(true);
         try {
-            const res = await fetch("/api/waitlist", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: form.email.trim(),
-                    name: form.name.trim() || undefined,
-                }),
-            });
+            // Create Supabase client
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-            const data = (await res.json()) as ApiResponse;
-            if (!res.ok || !("success" in data && data.success)) {
-                const msg = (data as ApiError)?.error || "Something went wrong. Please try again.";
-                setError(msg);
+            if (!supabaseUrl || !supabaseKey) {
+                setError("Supabase configuration missing. Please check your environment variables.");
                 return;
             }
-            setSuccess(data as ApiSuccess);
-        } catch (_e) {
-            setError("Network error. Please try again.");
+
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // Insert into waitlist table
+            const { data: insertData, error: insertError } = await supabase
+                .from('waitlist')
+                .insert({
+                    email: form.email.trim().toLowerCase(),
+                    name: form.name.trim() || null
+                })
+                .select()
+                .single();
+
+            if (insertError) {
+                if (insertError.code === '23505') {
+                    setError("This email is already registered!");
+                    return;
+                }
+                throw insertError;
+            }
+
+            // Get total count for position
+            const { count, error: countError } = await supabase
+                .from('waitlist')
+                .select('*', { count: 'exact', head: true });
+
+            if (countError) {
+                console.warn('Could not get position:', countError);
+            }
+
+            setSuccess({ success: true, position: count || 1 });
+        } catch (err: any) {
+            console.error('Error:', err);
+            setError(err.message || "Something went wrong. Please try again.");
         } finally {
             setSubmitting(false);
         }

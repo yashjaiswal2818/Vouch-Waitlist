@@ -1,4 +1,6 @@
 // Email service for waitlist signups
+import { createClient } from '@supabase/supabase-js';
+
 export interface WaitlistSignup {
     email: string;
     source?: string; // Track where signup came from (hero, cta, etc.)
@@ -8,31 +10,47 @@ export interface WaitlistSignup {
 export class EmailService {
     private static async submitToBackend(data: WaitlistSignup): Promise<{ success: boolean; position?: number }> {
         try {
-            // Use the API route instead of direct Supabase connection
-            const response = await fetch('/api/waitlist', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: data.email,
-                    name: null,
-                    source: data.source
-                })
-            });
+            // Use direct Supabase connection instead of API route
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                if (response.status === 409) {
+            if (!supabaseUrl || !supabaseKey) {
+                console.error('Supabase configuration missing');
+                return { success: false };
+            }
+
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // Insert into waitlist table
+            const { data: insertData, error: insertError } = await supabase
+                .from('waitlist')
+                .insert({
+                    email: data.email.toLowerCase().trim(),
+                    name: null,
+                    source: data.source || 'unknown'
+                })
+                .select()
+                .single();
+
+            if (insertError) {
+                if (insertError.code === '23505') {
                     // Email already exists
                     return { success: true, position: 0 };
                 }
-                throw new Error(errorData.error || 'Failed to submit');
+                throw insertError;
             }
 
-            const result = await response.json();
-            console.log('Waitlist signup successful:', result);
-            return { success: true, position: result.position };
+            // Get total count for position
+            const { count, error: countError } = await supabase
+                .from('waitlist')
+                .select('*', { count: 'exact', head: true });
+
+            if (countError) {
+                console.warn('Could not get position:', countError);
+            }
+
+            console.log('Waitlist signup successful:', insertData);
+            return { success: true, position: count || 1 };
         } catch (error) {
             console.error('Email submission failed:', error);
             return { success: false };
@@ -72,11 +90,29 @@ export class EmailService {
     }
 
     // Get signup count for display
-    static getSignupCount(): number {
+    static async getSignupCount(): Promise<number> {
         try {
-            const signups = JSON.parse(localStorage.getItem('waitlist_signups') || '[]');
-            return signups.length;
-        } catch {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            if (!supabaseUrl || !supabaseKey) {
+                console.warn('Supabase configuration missing, using fallback count');
+                return 47; // Fallback to current number
+            }
+
+            const supabase = createClient(supabaseUrl, supabaseKey);
+            const { count, error } = await supabase
+                .from('waitlist')
+                .select('*', { count: 'exact', head: true });
+
+            if (error) {
+                console.error('Failed to get signup count:', error);
+                return 47; // Fallback to current number
+            }
+
+            return count || 47;
+        } catch (error) {
+            console.error('Failed to get signup count:', error);
             return 47; // Fallback to current number
         }
     }

@@ -1,19 +1,33 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, TrendingUp, Clock } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
 const WaitlistCounter = () => {
     const [signupCount, setSignupCount] = useState(47);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Fetch count from API
+        // Fetch count from Supabase
         const fetchCount = async () => {
             try {
-                const response = await fetch('/api/waitlist-count');
-                if (response.ok) {
-                    const data = await response.json();
-                    setSignupCount(data.count || 47);
+                const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+                if (!supabaseUrl || !supabaseKey) {
+                    console.warn('Supabase configuration missing');
+                    return;
+                }
+
+                const supabase = createClient(supabaseUrl, supabaseKey);
+                const { count, error } = await supabase
+                    .from('waitlist')
+                    .select('*', { count: 'exact', head: true });
+
+                if (error) {
+                    console.error('Failed to fetch waitlist count:', error);
+                } else {
+                    setSignupCount(count || 47);
                 }
             } catch (error) {
                 console.error('Failed to fetch waitlist count:', error);
@@ -45,10 +59,20 @@ const WaitlistCounter = () => {
         if (isVisible) {
             const interval = setInterval(async () => {
                 try {
-                    const response = await fetch('/api/waitlist-count');
-                    if (response.ok) {
-                        const data = await response.json();
-                        setSignupCount(data.count || 47);
+                    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+                    if (!supabaseUrl || !supabaseKey) {
+                        return;
+                    }
+
+                    const supabase = createClient(supabaseUrl, supabaseKey);
+                    const { count, error } = await supabase
+                        .from('waitlist')
+                        .select('*', { count: 'exact', head: true });
+
+                    if (!error && count !== null) {
+                        setSignupCount(count);
                     }
                 } catch (error) {
                     console.error('Failed to update count:', error);
